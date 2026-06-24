@@ -1,0 +1,63 @@
+@model EmployeeTaskManagement.Models.TaskItem
+@{
+    ViewData["Title"] = "Task Details";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h3 class="card-title mb-4">@Model.Title</h3>
+
+                <table class="table">
+                    <tr>
+                        <th>Description</th>
+                        <td>@Model.Description</td>
+                    </tr>
+                    <tr>
+                        <th>Assigned To</th>
+                        <td>@Model.AssignedTo?.FullName</td>
+                    </tr>
+                    <tr>
+                        <th>Created By</th>
+                        <td>@Model.CreatedBy?.FullName</td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            <span class="badge @(Model.Status == EmployeeTaskManagement.Models.TaskStatus.Done ? "bg-success" :
+                                                 Model.Status == EmployeeTaskManagement.Models.TaskStatus.InProgress ? "bg-warning text-dark" : "bg-secondary")">
+                                @Model.Status
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Priority</th>
+                        <td>
+                            <span class="badge @(Model.Priority == EmployeeTaskManagement.Models.TaskPriority.High ? "bg-danger" :
+                                                 Model.Priority == EmployeeTaskManagement.Models.TaskPriority.Medium ? "bg-warning text-dark" : "bg-info text-dark")">
+                                @Model.Priority
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Due Date</th>
+                        <td>@Model.DueDate.ToString("dd MMM yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th>Created At</th>
+                        <td>@Model.CreatedAt.ToString("dd MMM yyyy")</td>
+                    </tr>
+                </table>
+
+                <div class="d-flex gap-2 mt-3">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back to Tasks</a>
+                    @if (User.IsInRole("Manager"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

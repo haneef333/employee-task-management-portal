@@ -1,0 +1,89 @@
+@model IEnumerable<EmployeeTaskManagement.Models.TaskItem>
+@{
+    ViewData["Title"] = "Tasks";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Tasks</h2>
+    @if (ViewBag.IsManager)
+    {
+        <a asp-action="Create" class="btn btn-primary">+ New Task</a>
+    }
+</div>
+
+<!-- Filters -->
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            <option value="ToDo" selected="@(ViewBag.CurrentStatus == "ToDo")">To Do</option>
+            <option value="InProgress" selected="@(ViewBag.CurrentStatus == "InProgress")">In Progress</option>
+            <option value="Done" selected="@(ViewBag.CurrentStatus == "Done")">Done</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="priority" class="form-select">
+            <option value="">All Priorities</option>
+            <option value="Low" selected="@(ViewBag.CurrentPriority == "Low")">Low</option>
+            <option value="Medium" selected="@(ViewBag.CurrentPriority == "Medium")">Medium</option>
+            <option value="High" selected="@(ViewBag.CurrentPriority == "High")">High</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-secondary w-100">Filter</button>
+    </div>
+</form>
+
+<!-- Task Table -->
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Assigned To</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr>
+                    <td>@task.Title</td>
+                    <td>@task.AssignedTo?.FullName</td>
+                    <td>
+                        <span class="badge @(task.Status == EmployeeTaskManagement.Models.TaskStatus.Done ? "bg-success" :
+                                             task.Status == EmployeeTaskManagement.Models.TaskStatus.InProgress ? "bg-warning text-dark" : "bg-secondary")">
+                            @task.Status
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge @(task.Priority == EmployeeTaskManagement.Models.TaskPriority.High ? "bg-danger" :
+                                             task.Priority == EmployeeTaskManagement.Models.TaskPriority.Medium ? "bg-warning text-dark" : "bg-info text-dark")">
+                            @task.Priority
+                        </span>
+                    </td>
+                    <td>@task.DueDate.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-sm btn-outline-primary">View</a>
+                        @if (ViewBag.IsManager)
+                        {
+                            <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@task.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Delete this task?')">Delete</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted text-center mt-4">No tasks found.</p>
+}

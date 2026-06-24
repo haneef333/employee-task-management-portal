@@ -1,0 +1,69 @@
+@model EmployeeTaskManagement.Models.TaskItem
+@{
+    ViewData["Title"] = "Edit Task";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h3 class="card-title mb-4">Edit Task</h3>
+
+                <form method="post" asp-action="Edit">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" name="Title" value="@Model.Title" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="Description" class="form-control" rows="3">@Model.Description</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Assign To</label>
+                        <select name="assignedToUserId" class="form-select" required>
+                            <option value="">-- Select Employee --</option>
+                            @foreach (var user in ViewBag.Users)
+                            {
+                                <option value="@user.Id" selected="@(user.Id == Model.AssignedToUserId)">
+                                    @user.FullName (@user.Department)
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="Status" class="form-select">
+                            <option value="ToDo" selected="@(Model.Status == EmployeeTaskManagement.Models.TaskStatus.ToDo)">To Do</option>
+                            <option value="InProgress" selected="@(Model.Status == EmployeeTaskManagement.Models.TaskStatus.InProgress)">In Progress</option>
+                            <option value="Done" selected="@(Model.Status == EmployeeTaskManagement.Models.TaskStatus.Done)">Done</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Priority</label>
+                        <select name="Priority" class="form-select">
+                            <option value="Low" selected="@(Model.Priority == EmployeeTaskManagement.Models.TaskPriority.Low)">Low</option>
+                            <option value="Medium" selected="@(Model.Priority == EmployeeTaskManagement.Models.TaskPriority.Medium)">Medium</option>
+                            <option value="High" selected="@(Model.Priority == EmployeeTaskManagement.Models.TaskPriority.High)">High</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" name="DueDate" value="@Model.DueDate.ToString("yyyy-MM-dd")" class="form-control" required />
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
