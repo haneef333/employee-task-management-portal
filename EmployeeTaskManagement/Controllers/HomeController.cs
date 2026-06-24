@@ -1,24 +1,48 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using EmployeeTaskManagement.Models;
+using EmployeeTaskManagement.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
-namespace EmployeeTaskManagement.Controllers;
-
-public class HomeController : Controller
+namespace EmployeeTaskManagement.Controllers
 {
-    public IActionResult Index()
+    [Authorize]
+    public class HomeController : Controller
     {
-        return View();
-    }
+        private readonly ITaskRepository _taskRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        public HomeController(ITaskRepository taskRepository, UserManager<ApplicationUser> userManager)
+        {
+            _taskRepository = taskRepository;
+            _userManager = userManager;
+        }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public async Task<IActionResult> Index()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isManager = await _userManager.IsInRoleAsync(user!, "Manager");
+
+            IEnumerable<TaskItem> tasks;
+
+            if (isManager)
+                tasks = await _taskRepository.GetAllTasksAsync();
+            else
+                tasks = await _taskRepository.GetTasksByUserAsync(user!.Id);
+
+            ViewBag.TotalTasks = tasks.Count();
+            ViewBag.TodoTasks = tasks.Count(t => t.Status == Models.TaskStatus.ToDo);
+            ViewBag.InProgressTasks = tasks.Count(t => t.Status == Models.TaskStatus.InProgress);
+            ViewBag.DoneTasks = tasks.Count(t => t.Status == Models.TaskStatus.Done);
+            ViewBag.IsManager = isManager;
+            ViewBag.UserName = user!.FullName;
+
+            return View();
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
     }
 }

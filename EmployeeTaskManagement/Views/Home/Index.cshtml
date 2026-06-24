@@ -1,8 +1,69 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="mb-4">
+    <h2>Welcome, @ViewBag.UserName</h2>
+    <p class="text-muted">@(ViewBag.IsManager ? "Manager Dashboard" : "Employee Dashboard")</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary shadow">
+            <div class="card-body">
+                <h6 class="card-title">Total Tasks</h6>
+                <h2 class="card-text">@ViewBag.TotalTasks</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-secondary shadow">
+            <div class="card-body">
+                <h6 class="card-title">To Do</h6>
+                <h2 class="card-text">@ViewBag.TodoTasks</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-dark bg-warning shadow">
+            <div class="card-body">
+                <h6 class="card-title">In Progress</h6>
+                <h2 class="card-text">@ViewBag.InProgressTasks</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success shadow">
+            <div class="card-body">
+                <h6 class="card-title">Done</h6>
+                <h2 class="card-text">@ViewBag.DoneTasks</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Links -->
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">View All Tasks</h5>
+                <p class="card-text text-muted">See and filter all your tasks.</p>
+                <a asp-controller="Task" asp-action="Index" class="btn btn-primary">Go to Tasks</a>
+            </div>
+        </div>
+    </div>
+    @if (ViewBag.IsManager)
+    {
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Create New Task</h5>
+                    <p class="card-text text-muted">Assign a new task to an employee.</p>
+                    <a asp-controller="Task" asp-action="Create" class="btn btn-success">Create Task</a>
+                </div>
+            </div>
+        </div>
+    }
 </div>
